@@ -1,49 +1,135 @@
 {
-  "name": "Registro de usuario: mensaje motivador con IA",
+  "name": "Email_test_ia",
   "nodes": [
     {
-      "parameters": { "httpMethod": "POST", "path": "nuevo-usuario", "options": {} },
-      "id": "1b0f6c1e-0000-4000-8000-000000000001",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [0, 0],
-      "webhookId": "nuevo-usuario"
-    },
-    {
       "parameters": {
-        "method": "POST",
-        "url": "http://ollama:11434/api/generate",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: 'llama3.2', stream: false, prompt: 'Escribe en español un mensaje corto, alentador y con un toque de humor para ' + $json.body.name + ', que acaba de registrarse en una app. Máximo 60 palabras, sin saludos de despedida.' }) }}",
-        "options": { "timeout": 120000 }
-      },
-      "id": "1b0f6c1e-0000-4000-8000-000000000002",
-      "name": "Ollama (IA local)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [260, 0]
-    },
-    {
-      "parameters": {
-        "fromEmail": "tu-correo@gmail.com",
-        "toEmail": "={{ $('Webhook').item.json.body.email }}",
-        "subject": "¡Bienvenido! Tenemos un mensaje para ti",
-        "emailFormat": "text",
-        "text": "={{ $json.response }}",
+        "httpMethod": "POST",
+        "path": "nuevo-usuario",
         "options": {}
       },
-      "id": "1b0f6c1e-0000-4000-8000-000000000003",
-      "name": "Enviar correo",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "be78f4c9-2314-479f-87d4-217c1aa2349c",
+      "name": "Webhook",
+      "webhookId": "44bc38b9-170b-40bd-a529-f0da2d99a53d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un asistente con mucho humor y espíritu de compañerismo \ndirigido a estudiantes de Análisis y Desarrollo de Software (ADSO). \nCuando alguien se registra en la plataforma, le escribes un mensaje \nde bienvenida cálido, alentador y divertido, como si fuera tu mejor \ncompañero de clase. El mensaje debe:\n- Animarlos a seguir estudiando programación y no rendirse\n- Mencionar algo gracioso sobre la vida del programador (bugs, café, stack overflow)\n- Máximo 4 oraciones\n- Terminar con un chiste relacionado con programación o ser estudiante de sistemas\n- Ser personalizado usando el nombre del estudiante\n\nSe acaba de registrar el estudiante {{ $('Webhook').item.json.body.name }}.\nEscríbele un mensaje de bienvenida motivador.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        192,
+        0
+      ],
+      "id": "96fc84a2-eac8-4a50-a601-0069725e1c61",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-r1:8b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        176,
+        176
+      ],
+      "id": "486a0d0e-6536-4e26-84e6-c3487ef4039b",
+      "name": "Ollama Chat Model"
+    },
+    {
+      "parameters": {
+        "jsCode": "// El mensaje generado por Ollama viene aquí\nconst aiMessage = $input.item.json.text;\n\n// Los datos originales del Webhook\nconst userName  = $('Webhook').item.json.body.name;\nconst userEmail = $('Webhook').item.json.body.email;\n\n// Limpiamos etiquetas <think> que a veces genera el modelo\nconst cleanMessage = aiMessage.replace(/<think>[\\s\\S]*?<\\/think>/g, '').trim();\n\n// Construimos el HTML del email\nconst htmlBody = `\n<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;\">\n  <div style=\"background:#4f46e5;padding:24px;border-radius:12px 12px 0 0;\">\n    <h1 style=\"color:white;margin:0;font-size:22px;\">¡Bienvenido ${userName}! 🎉</h1>\n  </div>\n  <div style=\"background:#f9fafb;padding:24px;border-radius:0 0 12px 12px;border:1px solid #e5e7eb;\">\n    <p style=\"color:#374151;font-size:16px;line-height:1.7;white-space:pre-line;\">${cleanMessage}</p>\n    <hr style=\"border:none;border-top:1px solid #e5e7eb;margin:20px 0;\">\n    <p style=\"color:#9ca3af;font-size:12px;\">Mensaje generado por Mi IA local 🤖</p>\n  </div>\n</div>`;\n\nreturn [{\n  json: {\n    to:      userEmail,\n    subject: `¡Bienvenido ${userName}! Mi IA tiene un mensaje para ti 🤖`,\n    html:    htmlBody,\n    text:    cleanMessage\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "bfb8c52e-655f-4f5d-89d6-1bea94dc3768",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fromEmail": "=tu-correo@gmail.com",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [520, 0]
+      "position": [
+        752,
+        0
+      ],
+      "id": "6958c5e6-2fdc-4a04-98a2-8d12acbac627",
+      "name": "Send email",
+      "webhookId": "e76b02b5-a91e-4ae4-ba54-63f1f415e612"
     }
   ],
   "connections": {
-    "Webhook": { "main": [[{ "node": "Ollama (IA local)", "type": "main", "index": 0 }]] },
-    "Ollama (IA local)": { "main": [[{ "node": "Enviar correo", "type": "main", "index": 0 }]] }
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" }
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "active": false,
+  "pinData": {}
 }

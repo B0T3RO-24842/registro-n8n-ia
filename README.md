@@ -4,13 +4,15 @@ Un formulario de registro que, al enviarse, guarda al usuario en MySQL y dispara
 
 El punto de este proyecto es la **automatización**: el backend responde al instante y la IA trabaja en segundo plano, sin que el usuario espere.
 
+![Formulario de registro](docs/cover.png)
+
 ```mermaid
 flowchart LR
   A[Formulario<br/>nombre + correo] --> B[API Express]
   B -->|INSERT| C[(MySQL)]
   B -->|201 inmediato| A
   B -.->|webhook, sin esperar| D[n8n]
-  D --> E[Ollama<br/>llama3.2 en local]
+  D --> E[Ollama<br/>modelo local]
   E --> F[Correo SMTP]
 ```
 
@@ -23,7 +25,7 @@ flowchart LR
 
 ## Stack
 
-Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (modelo `llama3.2`, corre en CPU), HTML/CSS/JS sin framework.
+Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (el flujo usa `deepseek-r1:8b`; sirve cualquier modelo, y el código del flujo quita las etiquetas `<think>` de los modelos que razonan), HTML/CSS/JS sin framework.
 
 ## Cómo correrlo
 
@@ -38,10 +40,15 @@ Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (mo
    ```
 
    Abre http://localhost:3000. El mismo servidor entrega el formulario.
-3. **n8n + Ollama:** levanta n8n con Ollama, por ejemplo con el [self-hosted AI starter kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) de n8n (`docker compose --profile cpu up -d`).
+3. **n8n + Ollama:** n8n corre en Docker con el [self-hosted AI starter kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) de n8n (`docker compose up -d`) y Ollama en tu máquina con el modelo `deepseek-r1:8b` (`ollama pull deepseek-r1:8b`).
    - En n8n: **Import from file** → `n8n/workflow.json`.
-   - En el nodo *Enviar correo* crea una credencial SMTP (con Gmail, una contraseña de aplicación) y cambia `fromEmail`.
+   - Nodo *Ollama Chat Model*: crea la credencial con la URL `http://host.docker.internal:11434` (Ollama en tu máquina). Si usas el Ollama del compose, la URL es `http://ollama:11434` y el modelo `llama3.2`.
+   - Nodo *Send email*: crea una credencial SMTP (con Gmail, una contraseña de aplicación) y cambia el campo *From*.
    - Publica el flujo (*Active*). Si lo pruebas sin publicar, usa la URL `/webhook-test/…` en `N8N_WEBHOOK_URL`.
+
+   Dos tropiezos conocidos:
+   - Si un antivirus intercepta el TLS (Avast, por ejemplo), el nodo *Send email* falla por certificado; activa **Ignore SSL Issues** en ese nodo.
+   - Si Ollama devuelve `unsupported toolchain` en una GPU NVIDIA antigua, actualiza el controlador de la tarjeta o fuerza CPU (en la API, `"options": {"num_gpu": 0}`). En CPU un mensaje tarda cerca de un minuto.
 
 Pruebas: `cd backend && npm test`.
 
