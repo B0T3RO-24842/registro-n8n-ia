@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar usuario</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+ 
+  <main class="card">
+    <h1>Recibe un mensaje motivador</h1>
+ 
+    <!-- Campo nombre -->
+    <label for="name">Nombre</label>
+    <input
+      id="name"
+      type="text"
+      placeholder="Ej: Juan Pérez"
+      autocomplete="name"
+    />
+ 
+    <!-- Campo email -->
+    <label for="email">Correo electrónico</label>
+    <input
+      id="email"
+      type="email"
+      placeholder="Ej: juan@gmail.com"
+      autocomplete="email"
+    />
+ 
+    <button id="btn">Enviar</button>
+ 
+    <!-- Aquí aparecerá el mensaje de respuesta -->
+    <p id="msg"></p>
+  </main>
+ 
+  <script type="module" src="main.js"></script>
+</body>
+</html>

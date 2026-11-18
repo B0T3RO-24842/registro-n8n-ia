@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API de registro de usuarios que avisa a n8n",
+  "main": "app.js",
+  "engines": { "node": ">=22.9" },
+  "scripts": {
+    "test": "node --test controllers/validar.test.js",
+    "dev": "node --env-file-if-exists=.env --watch app.js",
+    "start": "node --env-file-if-exists=.env app.js"
+  },
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.19.1"
+  }
+}

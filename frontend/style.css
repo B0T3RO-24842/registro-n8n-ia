@@ -1,0 +1,107 @@
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+   
+  /* Fondo de la página — centra la tarjeta */
+  body {
+    background: #f4f6f8;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+   
+  /* Tarjeta principal */
+  .card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 340px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+   
+  .card h1 {
+    font-size: 1.4rem;
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+   
+  /* Labels de los campos */
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+  }
+   
+  /* Inputs — aplica tanto al de nombre como al de email */
+  input {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+   
+  /* Resalta el input cuando el usuario hace clic en él */
+  input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+   
+  /* Borde rojo cuando el email tiene formato inválido */
+  /* (el navegador lo marca automáticamente con :invalid) */
+  input[type="email"]:not(:placeholder-shown):invalid {
+    border-color: #e53e3e;
+  }
+   
+  /* Botón Enviar */
+  button {
+    display: block;
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.7rem;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+  }
+   
+  button:hover:not(:disabled) {
+    background: #4338ca;
+  }
+   
+  /* Apaga visualmente el botón mientras espera la respuesta */
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+   
+  /* Mensaje de respuesta — cambia de color según el resultado */
+  #msg {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    min-height: 1.2rem;
+    color: #059669;   /* verde — éxito */
+  }
+   
+  #msg.error {
+    color: #e53e3e;   /* rojo — error */
+  }
+   
+  

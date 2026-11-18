@@ -1,0 +1,49 @@
+{
+  "name": "Registro de usuario: mensaje motivador con IA",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "nuevo-usuario", "options": {} },
+      "id": "1b0f6c1e-0000-4000-8000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "nuevo-usuario"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'llama3.2', stream: false, prompt: 'Escribe en español un mensaje corto, alentador y con un toque de humor para ' + $json.body.name + ', que acaba de registrarse en una app. Máximo 60 palabras, sin saludos de despedida.' }) }}",
+        "options": { "timeout": 120000 }
+      },
+      "id": "1b0f6c1e-0000-4000-8000-000000000002",
+      "name": "Ollama (IA local)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "tu-correo@gmail.com",
+        "toEmail": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "¡Bienvenido! Tenemos un mensaje para ti",
+        "emailFormat": "text",
+        "text": "={{ $json.response }}",
+        "options": {}
+      },
+      "id": "1b0f6c1e-0000-4000-8000-000000000003",
+      "name": "Enviar correo",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Ollama (IA local)", "type": "main", "index": 0 }]] },
+    "Ollama (IA local)": { "main": [[{ "node": "Enviar correo", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}
