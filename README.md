@@ -25,7 +25,7 @@ flowchart LR
 
 ## Stack
 
-Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (el flujo usa `deepseek-r1:8b`; sirve cualquier modelo, y el código del flujo quita las etiquetas `<think>` de los modelos que razonan), HTML/CSS/JS sin framework.
+Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (el flujo usa `llama3.2`; sirve cualquier modelo, y el código del flujo quita las etiquetas `<think>` de los modelos que razonan, como `deepseek-r1`), HTML/CSS/JS sin framework.
 
 ## Cómo correrlo
 
@@ -40,9 +40,9 @@ Node.js 22+, Express 5, MySQL (XAMPP o cualquier MySQL/MariaDB), n8n, Ollama (el
    ```
 
    Abre http://localhost:3000. El mismo servidor entrega el formulario.
-3. **n8n + Ollama:** n8n corre en Docker con el [self-hosted AI starter kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) de n8n (`docker compose up -d`) y Ollama en tu máquina con el modelo `deepseek-r1:8b` (`ollama pull deepseek-r1:8b`).
+3. **n8n + Ollama:** n8n corre en Docker con el [self-hosted AI starter kit](https://github.com/n8n-io/self-hosted-ai-starter-kit) de n8n (`docker compose up -d`) y Ollama del mismo compose (perfil `cpu`: `docker compose --profile cpu up -d`), con el modelo `llama3.2`.
    - En n8n: **Import from file** → `n8n/workflow.json`.
-   - Nodo *Ollama Chat Model*: crea la credencial con la URL `http://host.docker.internal:11434` (Ollama en tu máquina). Si usas el Ollama del compose, la URL es `http://ollama:11434` y el modelo `llama3.2`.
+   - Nodo *Ollama Chat Model*: usa la credencial con la URL `http://ollama:11434` (Ollama del compose). Si prefieres el Ollama instalado en tu máquina, la URL es `http://host.docker.internal:11434`.
    - Nodo *Send email*: crea una credencial SMTP (con Gmail, una contraseña de aplicación) y cambia el campo *From*.
    - Publica el flujo (*Active*). Si lo pruebas sin publicar, usa la URL `/webhook-test/…` en `N8N_WEBHOOK_URL`.
 
